@@ -12,14 +12,20 @@
     <a v-for="(a,i) in 메뉴들" :key="i">{{ a }}</a>
   </div>
 
-  <div class="discount">
+  <div class="discount" v-if="showDiscount == true">
     <h4>지금 결제하면 30% 할인</h4>
   </div>
 
-  <Card :원룸="원룸들[i]" v-for="(작명,i) in 원룸들" :key="작명"/>
+  <button @click="priceSort">가격순정렬</button>
+  <button @click="sortBack">되돌리기</button>
 
-  <Modal :원룸들="원룸들" :누른거="누른거" :모달창열렸니="모달창열렸니" />
+  <Card @openModal="모당창열렸니 = true; 누른거 = $event" :원룸="원룸들[i]" v-for="(작명,i) in 원룸들" :key="작명"/>
 
+
+<transition name="fade">
+  <Modal @closeModal="모달창열렸니 = false" :원룸들="원룸들" :누른거="누른거"
+   :모달창열렸니="모달창열렸니" />
+</transition>
 
 </template>
 
@@ -32,9 +38,11 @@ import Card from './Card.vue';
 
 export default {
   name: 'App',
-
+  
   data(){
     return{
+      showDiscount : true,
+      원룸들오리지널 : [...data],
       오브젝트 : { name : 'kim', age : 20},
       누른거 : 0,
       원룸들 : data,
@@ -44,23 +52,57 @@ export default {
       products : ['역삼동원룸', '천호동원룸', '마포구원룸'],
     }
   },
-  created() {
-    
-  },
 
   methods : {
     increase(){
       this.신고수 +=1;
     },
+    sortBack(){
+      this.원룸들 = [...this.원룸들오리지널];
+    },
+    priceSort(){
+      this.원룸들.sort(function(a,b){
+        return a.price - b.price
+      })
+    },
   },
+
+
+  mounted(){
+    setTimeout(()=>{
+      this.showDiscount = false;
+    }, 2000);
+  },
+
   components: {
     Modal : Modal,
     Card : Card,
-  }
+  },
+  
 }
 </script>
 
 <style>
+.fade-leave-from {
+  opacity: 1;
+  }
+.fade-leave-active {
+  transition: all 1s;
+}
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-from {
+  transform: translateY(-1000px);
+  }
+.fade-enter-active {
+  transition: all 1s;
+}
+.fade-enter-to {
+  transform: translateY(0px);
+}
+
 body {
   margin : 0
 }
